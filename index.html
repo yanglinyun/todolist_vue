@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>todo_list</title>
+  </head>
+  <style>
+    body {
+      background-color: skyblue;
+      height: 100vh;
+    }
+    div {
+      box-sizing: border-box;
+    }
+    #app {
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+      height: 500px;
+      width: 500px;
+      background-color: pink;
+      border-radius: 10px;
+      position: absolute;
+      padding: 10px 10px 70px 10px;
+    }
+    .func {
+      height: 40px;
+      position: absolute;
+      bottom: 20px;
+      border-radius: 5px;
+      background-color: rgb(111, 142, 230);
+      padding: 10px;
+    }
+    .add {
+      left: 10%;
+      background-color: orange;
+    }
+    .changeL {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .clearAll {
+      right: 10%;
+      background-color: white;
+    }
+    .list {
+      border: 2px solid #000;
+      background-color: rgb(192, 248, 255);
+      height: 100%;
+      border-radius: 10px;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    .item {
+      padding: 2px 5px;
+      border-radius: 10px;
+      border: 2px solid #000;
+      background-color: rgb(254, 255, 192);
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .del,
+    .finished {
+      color: white;
+      position: absolute;
+      display: block;
+      overflow: hidden;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      border-radius: 50%;
+      text-align: center;
+      padding: 2px;
+      font-weight: bold;
+    }
+    .finished {
+      right: 14px;
+      top: -11px;
+    }
+    .del {
+      right: -11px;
+      top: -11px;
+    }
+    .addOneDialog{
+        width: auto;
+        height: auto;
+        text-align: center;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        bottom: auto;
+        z-index: 999;
+    }
+    h3{
+        padding: 5px 0;
+        margin: 0;
+    }
+    button{
+        margin-top: 10px;
+        background-color: orange;
+        border-radius: 5px;
+        border: 0;
+    }
+    @media (max-width: 540px){
+        #app{
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            border-radius: 0;
+        }
+    }
+  </style>
+  <body>
+    <div id="app">
+        <div class="func addOneDialog" :style="{display:is_show_addOne?'block':'none'}">
+            <h3>添加对话框</h3>
+            <label for="itemName_i">事项</label>
+            <input type="text" id="itemName_i" v-model="itemName"/>
+            <br>
+            <button @click="addOne">添加</button>
+         </div>
+      <div class="list">
+        <div class="item" v-for="(item,index) in (whichOne==1)?loading:finished" :key="index">
+          <span class="del" :style="del_finished" @click="removeOne(index)">X</span
+          ><span class="finished" :style="del_finished" @click="finishedOne(index)">√</span>{{item}}
+        </div>
+      </div>
+      <div class="func add" @click="show_addOne()">{{is_show_addOne?'取消':'添加'}}</div>
+      <div class="func changeL">
+        <span @click="changeList()">进行</span>|<span @click="changeList()"
+          >完成</span
+        >
+      </div>
+      <div class="func clearAll" @click="clearAll()">清空</div>
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    var app = new Vue({
+      el: "#app",
+      data: {
+        whichOne: 1, //loading=1;fin=0
+        loading: ["测试1"],
+        finished: ["完成1"],
+        del_finished: "",
+        is_show_addOne:false,
+        itemName:""
+      },
+      methods: {
+        clearAll:function(){
+            if(confirm("真的清空吗?")){
+                if(this.whichOne==1){
+                    this.loading = [];
+                }else{
+                    this.finished = [];
+                }
+            }
+        },
+        show_addOne:function(){
+            this.is_show_addOne = !this.is_show_addOne;
+        },
+        addOne:function(){
+            this.loading.push(this.itemName);
+            this.show_addOne();
+        },
+        removeOne: function(index){
+            this.loading.splice(index,1);
+        },
+        finishedOne: function(index){
+            let fone = this.loading.splice(index,1)[0];
+            this.finished.push(fone);
+        },
+        changeList: function () {
+          this.whichOne = this.whichOne == 1 ? 0 : 1;
+          this.del_finished_fn();
+        },
+        del_finished_fn: function () {
+          this.del_finished =
+            "display:" + (this.whichOne == 1 ? "block" : "none");
+        },
+      },
+    });
+  </script>
+</html>
